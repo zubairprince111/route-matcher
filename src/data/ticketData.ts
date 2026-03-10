@@ -14,6 +14,19 @@ export interface TicketListing {
   description: string;
   phone: string;
   postedAt: string;
+  reportCount?: number;
+  isFraud?: boolean;
+}
+
+export interface LocalFareReport {
+  id: string;
+  fromArea: string;
+  toArea: string;
+  vehicleType: "Local Bus" | "Rickshaw" | "CNG" | "Shared Auto";
+  price: number;
+  description?: string;
+  phone?: string;
+  postedAt: string;
 }
 
 export interface Route {
@@ -104,6 +117,13 @@ export const mockTickets: TicketListing[] = [
   { id: "12", origin: "Dhaka", destination: "Comilla", vehicleType: "Bus", operatorName: "Asia Line", price: 350, description: "Asia Line, Dec 25 morning. Non-AC.", phone: "+8801123456789", postedAt: "8 hours ago" },
   { id: "13", origin: "Dhaka", destination: "Chittagong", vehicleType: "Train", operatorName: "Sonar Bangla Express", price: 700, description: "Sonar Bangla Express, Dec 25. AC Chair.", phone: "+8801712000111", postedAt: "1 hour ago" },
   { id: "14", origin: "Dhaka", destination: "Sylhet", vehicleType: "Train", operatorName: "Parabat Express", price: 550, description: "Parabat Express, Dec 26. Snigdha class.", phone: "+8801812000222", postedAt: "3 hours ago" },
+];
+
+export const mockLocalFares: LocalFareReport[] = [
+  { id: "l1", fromArea: "Uttara", toArea: "Banani", vehicleType: "Local Bus", price: 30, postedAt: "1 hour ago", description: "Raida Poribahan" },
+  { id: "l2", fromArea: "Dhanmondi", toArea: "Farmgate", vehicleType: "Rickshaw", price: 60, postedAt: "30 min ago" },
+  { id: "l3", fromArea: "Mohakhali", toArea: "Gulshan 1", vehicleType: "CNG", price: 150, postedAt: "2 hours ago" },
+  { id: "l4", fromArea: "Mirpur 10", toArea: "Motijheel", vehicleType: "Shared Auto", price: 40, postedAt: "1 hour ago" },
 ];
 
 export function getRoutes(): Route[] {

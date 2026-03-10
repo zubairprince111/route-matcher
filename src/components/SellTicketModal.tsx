@@ -193,6 +193,16 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
                 />
               </div>
 
+              {/* Seller Warning */}
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 space-y-1">
+                <p className="text-xs font-bold text-red-700 flex items-center gap-1.5">
+                  ⚠️ বিক্রেতাদের জন্য নোটিশ
+                </p>
+                <p className="text-xs text-red-700 leading-relaxed">
+                  টিকিটের গায়ে লেখা মূল্যের (MRP) চেয়ে <strong>বেশি দামে টিকিট বিক্রি করা সম্পূর্ণ বেআইনি।</strong> অতিরিক্ত দাম দিলে আপনার পোস্টটি সাথে সাথে ডিলিট করা হবে এবং আপনার ফোন নম্বরটি এই প্ল্যাটফর্ম থেকে স্থায়ীভাবে ব্যান করা হবে।
+                </p>
+              </div>
+
               <button
                 type="submit"
                 className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold text-sm hover:bg-primary/90 transition-colors"
