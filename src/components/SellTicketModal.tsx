@@ -10,12 +10,13 @@ interface SellTicketModalProps {
   onSubmit: (ticket: TicketListing) => void;
 }
 
-const cityNames = Object.keys(cities);
+const cityNames = Object.keys(cities).sort();
 
 export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProps) {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [vehicleType, setVehicleType] = useState<"Bus" | "Launch" | "Air">("Bus");
+  const [vehicleType, setVehicleType] = useState<"Bus" | "Launch" | "Air" | "Train">("Bus");
+  const [operatorName, setOperatorName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [phone, setPhone] = useState("");
@@ -50,6 +51,7 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
       origin,
       destination,
       vehicleType,
+      operatorName: operatorName.trim() || undefined,
       price: priceNum,
       description: description.trim().slice(0, 200),
       phone: phoneClean,
@@ -60,10 +62,10 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
     toast.success("Ticket posted! Your route is now live on the map.");
     onClose();
 
-    // Reset
     setOrigin("");
     setDestination("");
     setVehicleType("Bus");
+    setOperatorName("");
     setPrice("");
     setDescription("");
     setPhone("");
@@ -90,10 +92,10 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-x-4 top-[10%] sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-md z-[1003] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden"
+            className="fixed inset-x-4 top-[5%] sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-md z-[1003] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-secondary/20 flex items-center justify-center">
                   <Ticket className="w-4 h-4 text-secondary" />
@@ -109,12 +111,12 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="p-5 space-y-4">
+            <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Origin</label>
                   <select value={origin} onChange={(e) => setOrigin(e.target.value)} className={selectClasses}>
-                    <option value="">Select city</option>
+                    <option value="">Select district</option>
                     {cityNames.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
@@ -123,7 +125,7 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Destination</label>
                   <select value={destination} onChange={(e) => setDestination(e.target.value)} className={selectClasses}>
-                    <option value="">Select city</option>
+                    <option value="">Select district</option>
                     {cityNames.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
@@ -136,6 +138,7 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
                   <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Vehicle Type</label>
                   <select value={vehicleType} onChange={(e) => setVehicleType(e.target.value as any)} className={selectClasses}>
                     <option value="Bus">🚌 Bus</option>
+                    <option value="Train">🚆 Train</option>
                     <option value="Launch">🚢 Launch</option>
                     <option value="Air">✈️ Air</option>
                   </select>
@@ -155,11 +158,23 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
               </div>
 
               <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Operator / Service Name</label>
+                <input
+                  type="text"
+                  value={operatorName}
+                  onChange={(e) => setOperatorName(e.target.value)}
+                  placeholder="e.g. Greenline, Sonar Bangla Express, Biman..."
+                  className={inputClasses}
+                  maxLength={60}
+                />
+              </div>
+
+              <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Bus name, date, seat details..."
+                  placeholder="Date, seat details, class..."
                   rows={2}
                   maxLength={200}
                   className={`${inputClasses} resize-none`}

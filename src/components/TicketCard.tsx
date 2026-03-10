@@ -1,10 +1,11 @@
-import { Bus, Ship, Plane, Phone, MessageCircle } from "lucide-react";
+import { Bus, Ship, Plane, Phone, MessageCircle, TrainFront } from "lucide-react";
 import { TicketListing } from "@/data/ticketData";
 
 const vehicleIcons = {
   Bus: Bus,
   Launch: Ship,
   Air: Plane,
+  Train: TrainFront,
 };
 
 interface TicketCardProps {
@@ -32,7 +33,12 @@ export function TicketCard({ ticket }: TicketCardProps) {
           <div className="w-8 h-8 rounded-md bg-primary/20 flex items-center justify-center">
             <Icon className="w-4 h-4 text-primary" />
           </div>
-          <span className="text-sm font-medium text-muted-foreground">{ticket.vehicleType}</span>
+          <div>
+            <span className="text-sm font-medium text-muted-foreground">{ticket.vehicleType}</span>
+            {ticket.operatorName && (
+              <p className="text-xs text-foreground/70 leading-tight">{ticket.operatorName}</p>
+            )}
+          </div>
         </div>
         <span className="font-display font-bold text-secondary text-lg">৳{ticket.price}</span>
       </div>
