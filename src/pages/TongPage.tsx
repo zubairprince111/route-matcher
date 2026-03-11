@@ -229,17 +229,12 @@ export default function TongPage() {
 
             {/* FAB - Add Report */}
             {!isAddModalOpen && (
-                <div
-                    className={`absolute bottom-28 right-6 transition-all duration-300 pointer-events-none ${isMenuExpanded ? "z-[5500] opacity-50 scale-90" : "z-[7000] opacity-100 scale-100"
-                        }`}
+                <button
+                    onClick={() => setIsAddModalOpen(true)}
+                    className={`fixed bottom-24 right-6 z-[6000] bg-yellow-400 hover:bg-yellow-500 text-slate-900 w-16 h-16 rounded-full shadow-2xl flex items-center justify-center border-4 border-white/50 animate-bounce-subtle active:scale-90 transition-all ${isMenuExpanded ? "opacity-50 scale-90" : "opacity-100 scale-100"}`}
                 >
-                    <button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="pointer-events-auto bg-yellow-400 hover:bg-yellow-500 text-slate-900 w-16 h-16 rounded-full shadow-2xl flex items-center justify-center border-4 border-white/50 animate-bounce-subtle active:scale-90 transition-all"
-                    >
-                        <Plus className="w-8 h-8" strokeWidth={4} />
-                    </button>
-                </div>
+                    <Plus className="w-8 h-8" strokeWidth={4} />
+                </button>
             )}
 
             {/* Add Spot Forms Modal */}
