@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Ticket } from "lucide-react";
 import { cities, TicketListing } from "@/data/ticketData";
@@ -96,7 +97,7 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
     "w-full px-3 py-2.5 rounded-lg bg-muted border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50";
   const inputClasses = selectClasses;
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {open && (
         <>
@@ -186,54 +187,59 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
                   onChange={(e) => setOperatorName(e.target.value)}
                   placeholder="e.g. Greenline, Sonar Bangla Express, Biman..."
                   className={inputClasses}
-                  maxLength={60}
                 />
               </div>
 
-              <div>
+              <div className="relative">
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Date, seat details, class..."
-                  rows={2}
-                  maxLength={200}
-                  className={`${inputClasses} resize-none`}
+                  className={`${inputClasses} min-h-[100px] resize-none pb-8`}
                 />
+                <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground">
+                  {description.length}/200
+                </div>
               </div>
 
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Phone / WhatsApp</label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+8801XXXXXXXXX"
-                  className={inputClasses}
-                  maxLength={15}
-                />
-              </div>
+              <div className="space-y-4 pt-2">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Phone / WhatsApp</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+8801XXXXXXXXX"
+                      className={inputClasses}
+                    />
+                  </div>
+                </div>
 
-              {/* Seller Warning */}
-              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 space-y-1">
-                <p className="text-xs font-bold text-red-700 flex items-center gap-1.5">
-                  ⚠️ বিক্রেতাদের জন্য নোটিশ
-                </p>
-                <p className="text-xs text-red-700 leading-relaxed">
-                  টিকিটের গায়ে লেখা মূল্যের (MRP) চেয়ে <strong>বেশি দামে টিকিট বিক্রি করা সম্পূর্ণ বেআইনি।</strong> অতিরিক্ত দাম দিলে আপনার পোস্টটি সাথে সাথে ডিলিট করা হবে এবং আপনার ফোন নম্বরটি এই প্ল্যাটফর্ম থেকে স্থায়ীভাবে ব্যান করা হবে।
-                </p>
+                <div className="space-y-3 pt-2">
+                  <button
+                    type="submit"
+                    disabled={addTicketMutation.isPending}
+                    className="w-full py-3.5 px-4 bg-primary text-primary-foreground rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-50"
+                  >
+                    {addTicketMutation.isPending ? "Posting..." : "Post Listing Live"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="w-full py-3 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
-
-              <button
-                type="submit"
-                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-display font-bold text-sm hover:bg-primary/90 transition-colors"
-              >
-                Post Ticket — Go Live on Map
-              </button>
             </form>
           </motion.div>
         </>
       )}
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 }
