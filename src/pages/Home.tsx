@@ -8,30 +8,31 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] text-slate-800 pb-28 font-sans">
-            {/* Header */}
-            <div className="px-6 pt-12 pb-4 flex items-center justify-between">
-                <div className="flex flex-col">
-                    <h1 className="font-bold text-2xl tracking-tight leading-none text-slate-900">
+            {/* Top Section with Yellowish Header */}
+            <div className="bg-[#FFC72C] pb-2 rounded-b-[40px] shadow-sm mb-6 border-b border-[#E5B127]">
+                {/* Header */}
+                <div className="px-6 pt-12 pb-6 flex items-center justify-center relative">
+                    <h1 className="font-extrabold text-4xl tracking-tight leading-none text-slate-900 text-center">
                         DEK<span className="text-primary">Hoo</span>
                     </h1>
+                    <button className="absolute right-6 w-11 h-11 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors border border-[#E5B127]/30">
+                        <Bell className="w-5 h-5 text-slate-600" />
+                        <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+                    </button>
                 </div>
-                <button className="relative w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-sm hover:bg-slate-50 transition-colors">
-                    <Bell className="w-5 h-5 text-slate-600" />
-                    <div className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-                </button>
-            </div>
 
-            {/* Global Search */}
-            <div className="px-6 pb-6">
-                <div className="relative shadow-sm rounded-2xl bg-white flex items-center h-14 border border-slate-100">
-                    <div className="pl-4 flex items-center justify-center shrink-0">
-                        <Search className="h-5 w-5 text-slate-400" />
+                {/* Global Search */}
+                <div className="px-6 pb-4">
+                    <div className="relative shadow-md rounded-2xl bg-white flex items-center h-14 border border-slate-100/50">
+                        <div className="pl-4 flex items-center justify-center shrink-0">
+                            <Search className="h-5 w-5 text-slate-400" />
+                        </div>
+                        <Input
+                            type="text"
+                            className="w-full pl-3 pr-4 h-full rounded-2xl border-none bg-transparent text-sm focus-visible:ring-0 shadow-none placeholder:text-slate-400 font-medium"
+                            placeholder="Search routes or terminals..."
+                        />
                     </div>
-                    <Input
-                        type="text"
-                        className="w-full pl-3 pr-4 h-full rounded-2xl border-none bg-transparent text-sm focus-visible:ring-0 shadow-none placeholder:text-slate-400 font-medium"
-                        placeholder="Search routes or terminals..."
-                    />
                 </div>
             </div>
 
@@ -96,7 +97,7 @@ export default function Home() {
                     <ArrowRight className="text-slate-900/30" size={20} />
                 </div>
 
-                {/* Local Rates Card (Row Style like SOS Hub) */}
+                {/* Local Rates Card (Row Style like SOS Hub) - Renamed to VaraKoto Local */}
                 <div
                     onClick={() => navigate("/local-rates")}
                     className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow"
@@ -106,7 +107,7 @@ export default function Home() {
                             <img src="/rickshaw.png" alt="Rickshaw" className="h-6 object-contain" />
                         </div>
                         <div className="text-left">
-                            <h3 className="font-bold text-slate-900 text-sm">Local Rates</h3>
+                            <h3 className="font-bold text-slate-900 text-sm">VaraKoto Local</h3>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">BUS, Rickshaw & CNG</p>
                         </div>
                     </div>
@@ -121,9 +122,9 @@ export default function Home() {
                         onClick={() => navigate("/tong")}
                         className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center text-center cursor-pointer hover:shadow-md transition-shadow"
                     >
-                        <div className="relative w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mb-3">
-                            <Coffee className="w-6 h-6 text-emerald-600" />
-                            <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-yellow-500 rounded-full border-2 border-white" />
+                        <div className="relative w-14 h-14 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-3 p-1.5 shadow-inner">
+                            <img src="/tong_logo.png" alt="TONG" className="w-full h-full object-contain mix-blend-multiply" />
+                            <div className="absolute top-0 right-0 w-3 h-3 bg-yellow-500 rounded-full border-2 border-white shadow-sm" />
                         </div>
                         <h3 className="font-bold text-slate-900 text-sm mb-1">TONG</h3>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Boutique & Hangout</p>

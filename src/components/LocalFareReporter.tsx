@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, Bus, Car, Bike, Info, Plus, Send, ArrowRight, AlertTriangle, Phone, MapPin, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface LocalFareReport {
     id: string;
@@ -26,7 +27,7 @@ const LOCAL_AREAS = [
 const VEHICLE_TYPES = [
     { val: "bus", label: "🚌 Local Bus", icon: Bus },
     { val: "rickshaw", label: "🚲 Rickshaw", icon: Bike },
-    { val: "cng", label: "🛺 CNG", icon: Car }, // Using Car as placeholder in code, but will render emoji
+    { val: "cng", label: "🛺 CNG", icon: Car },
 ];
 
 interface LocalFareReporterProps {
@@ -46,15 +47,56 @@ export function LocalFareReporter({ open, onClose, pageMode = false }: LocalFare
     const [rickshawType, setRickshawType] = useState<'manual' | 'auto'>('manual');
     const [isShared, setIsShared] = useState(false);
 
-    // Local state for reports since backend for local fares isn't established yet
-    const [reports, setReports] = useState<LocalFareReport[]>([
-        { id: "1", fromArea: "Uttara", toArea: "Banani", vehicleType: "bus", price: 30, postedAt: "1 hour ago", upvotes: 12, downvotes: 2, description: "Raida Poribahan" },
-        { id: "2", fromArea: "Dhanmondi", toArea: "Farmgate", vehicleType: "rickshaw", price: 60, postedAt: "30 min ago", upvotes: 5, downvotes: 1, rickshawType: 'manual' },
-        { id: "3", fromArea: "Mohakhali", toArea: "Gulshan 1", vehicleType: "cng", price: 150, postedAt: "2 hours ago", upvotes: 2, downvotes: 8 },
-        { id: "5", fromArea: "Dhanmondi", toArea: "Shahbagh", vehicleType: "bus", price: 10, postedAt: "Just now", upvotes: 15, downvotes: 0, description: "Student Half Fare", isStudent: true },
-    ]);
+    const queryClient = useQueryClient();
 
-    if (!open) return null;
+    const { data: reports = [], isLoading } = useQuery({
+        queryKey: ["local_fare_reports"],
+        queryFn: async () => {
+            const res = await fetch("/api/local-fare-reports");
+            if (!res.ok) throw new Error("Failed to fetch data");
+            return (await res.json()) as LocalFareReport[];
+        }
+    });
+
+    const addReportMutation = useMutation({
+        mutationFn: async (report: Partial<LocalFareReport>) => {
+            const res = await fetch("/api/local-fare-reports", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(report)
+            });
+            if (!res.ok) throw new Error("Failed to post report");
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["local_fare_reports"] });
+            toast.success("রিপোর্ট সফলভাবে যোগ হয়েছে!");
+            setShowForm(false);
+            setFromArea("");
+            setToArea("");
+            setPrice("");
+            setDescription("");
+            setIsStudent(false);
+            setRickshawType('manual');
+            setIsShared(false);
+        },
+        onError: () => toast.error("রিপোর্ট যোগ করতে সমস্যা হয়েছে।")
+    });
+
+    const voteMutation = useMutation({
+        mutationFn: async ({ id, type }: { id: string; type: "upvote" | "downvote" }) => {
+            const res = await fetch("/api/vote", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ item_id: id, item_type: "local_fare_report", vote_type: type })
+            });
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || "Failed to vote");
+            }
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["local_fare_reports"] }),
+        onError: (err: any) => toast.error(err.message)
+    });
 
     const handleSubmit = () => {
         if (!fromArea || !toArea || !price) {
@@ -62,44 +104,19 @@ export function LocalFareReporter({ open, onClose, pageMode = false }: LocalFare
             return;
         }
 
-        const newReport: LocalFareReport = {
-            id: Date.now().toString(),
+        addReportMutation.mutate({
             fromArea,
             toArea,
             vehicleType,
             price: parseInt(price),
             description: description || undefined,
-            postedAt: "Just now",
-            upvotes: 0,
-            downvotes: 0,
-            isStudent: vehicleType === 'bus' ? isStudent : false,
-            rickshawType: vehicleType === 'rickshaw' ? rickshawType : undefined,
-            isShared: (vehicleType === 'rickshaw' && rickshawType === 'auto') ? isShared : undefined
-        };
-
-        setReports([newReport, ...reports]);
-        setShowForm(false);
-        setFromArea("");
-        setToArea("");
-        setPrice("");
-        setDescription("");
-        setIsStudent(false);
-        setRickshawType('manual');
-        setIsShared(false);
-        toast.success("রিপোর্ট সফলভাবে যোগ হয়েছে!");
+            // mapping local custom fields to description or separate columns if deployed
+            // For now they are posted directly assuming the DB schema has them or ignores extra 
+        });
     };
 
     const handleVote = (id: string, type: 'up' | 'down') => {
-        setReports(reports.map(r => {
-            if (r.id === id) {
-                return {
-                    ...r,
-                    upvotes: type === 'up' ? r.upvotes + 1 : r.upvotes,
-                    downvotes: type === 'down' ? r.downvotes + 1 : r.downvotes
-                };
-            }
-            return r;
-        }));
+        voteMutation.mutate({ id, type: type === 'up' ? 'upvote' : 'downvote' });
     };
 
     const inner = (
@@ -110,18 +127,18 @@ export function LocalFareReporter({ open, onClose, pageMode = false }: LocalFare
             }
         >
             {/* Header */}
-            <div className={`flex items-center justify-between px-6 py-5 border-b shrink-0 ${pageMode ? 'pt-8' : ''}`} style={{ background: "hsl(var(--primary))" }}>
+            <div className={`flex items-center justify-between px-6 py-5 border-b shrink-0 ${pageMode ? 'pt-8' : ''}`} style={{ background: "#FFC72C", borderBottomColor: "#E5B127" }}>
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                        <Car size={22} className="text-white" />
+                    <div className="w-10 h-10 rounded-xl bg-black/10 flex items-center justify-center">
+                        <Car size={22} className="text-slate-900" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-white leading-none">Local Rates</h2>
-                        <p className="text-[10px] font-bold text-emerald-100 uppercase tracking-widest mt-1">DEKHoo • BUS, Rickshaw & CNG</p>
+                        <h2 className="text-xl font-black text-slate-900 leading-none">VaraKoto Local</h2>
+                        <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mt-1">DEKHoo • BUS, Rickshaw & CNG</p>
                     </div>
                 </div>
                 {!pageMode && (
-                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-black/10 flex items-center justify-center text-white hover:bg-black/20 transition-colors">
+                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-black/10 flex items-center justify-center text-slate-900 hover:bg-black/20 transition-colors">
                         <X size={18} />
                     </button>
                 )}

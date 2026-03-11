@@ -51,7 +51,7 @@ function useFareReports() {
     return useQuery({
         queryKey: ["fare_reports"],
         queryFn: async () => {
-            const res = await fetch("/get-fare-reports");
+            const res = await fetch("/api/fare-reports");
             if (!res.ok) throw new Error("Failed to fetch");
             return (await res.json()) as FareReport[];
         },
@@ -63,7 +63,7 @@ function useAddFareReport() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (report: { from_city: string; to_city: string; transport_type: string; fare: number; company_name?: string; seat_class?: string }) => {
-            const res = await fetch("/submit-fare-report", {
+            const res = await fetch("/api/fare-reports", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(report),
@@ -89,14 +89,18 @@ function useVoteFare() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async ({ id, type }: { id: string; type: "upvote" | "downvote" }) => {
-            const res = await fetch("/vote-fare", {
+            const res = await fetch("/api/vote", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, type }),
+                body: JSON.stringify({ item_id: id, item_type: "fare_report", vote_type: type }),
             });
-            if (!res.ok) throw new Error("Failed to vote");
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || "Failed to vote");
+            }
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["fare_reports"] }),
+        onError: (err: any) => toast.error(err.message),
     });
 }
 
@@ -154,15 +158,15 @@ export function FareReporter({ open, onClose, pageMode = false }: FareReporterPr
             {/* Header */}
             <div
                 className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0"
-                style={{ background: "hsl(var(--primary))", borderColor: "hsl(var(--border))" }}
+                style={{ background: "#FFC72C", borderColor: "#E5B127" }}
             >
                 <div className="flex items-center gap-2">
-                    <Bus size={20} className="text-white" />
-                    <h2 className="text-lg font-black text-white">ভাড়া কত</h2>
+                    <Bus size={20} className="text-slate-900" />
+                    <h2 className="text-lg font-black text-slate-900">ভাড়া কত</h2>
                 </div>
                 {!pageMode && (
-                    <button onClick={onClose} className="p-1.5 rounded-full transition-all active:scale-90" style={{ background: "rgba(255,255,255,0.2)" }}>
-                        <X size={16} className="text-white" />
+                    <button onClick={onClose} className="p-1.5 rounded-full transition-all active:scale-90" style={{ background: "rgba(0,0,0,0.1)" }}>
+                        <X size={16} className="text-slate-900" />
                     </button>
                 )}
             </div>

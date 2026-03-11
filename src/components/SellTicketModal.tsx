@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Ticket } from "lucide-react";
 import { cities, TicketListing } from "@/data/ticketData";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface SellTicketModalProps {
   open: boolean;
@@ -20,6 +21,40 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [phone, setPhone] = useState("");
+
+  const queryClient = useQueryClient();
+
+  const addTicketMutation = useMutation({
+    mutationFn: async (ticket: any) => {
+      const res = await fetch("/api/tickets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(ticket),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to post ticket");
+      }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      // Bubble up to trigger re-renders if needed
+      onSubmit(data as TicketListing);
+      toast.success("Ticket posted! Your route is now live on the map.");
+      onClose();
+
+      setOrigin("");
+      setDestination("");
+      setVehicleType("Bus");
+      setOperatorName("");
+      setPrice("");
+      setDescription("");
+      setPhone("");
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to post ticket.");
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +81,7 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
       return;
     }
 
-    const ticket: TicketListing = {
-      id: Date.now().toString(),
+    addTicketMutation.mutate({
       origin,
       destination,
       vehicleType,
@@ -55,20 +89,7 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
       price: priceNum,
       description: description.trim().slice(0, 200),
       phone: phoneClean,
-      postedAt: "Just now",
-    };
-
-    onSubmit(ticket);
-    toast.success("Ticket posted! Your route is now live on the map.");
-    onClose();
-
-    setOrigin("");
-    setDestination("");
-    setVehicleType("Bus");
-    setOperatorName("");
-    setPrice("");
-    setDescription("");
-    setPhone("");
+    });
   };
 
   const selectClasses =

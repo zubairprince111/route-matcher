@@ -1,4 +1,4 @@
-import { Coffee, Clock, Star, MapPin } from "lucide-react";
+import { Coffee, Clock, Star, MapPin, Navigation } from "lucide-react";
 import { TongLocation, isTongOpen } from "@/data/tongData";
 
 interface TongCardProps {
@@ -39,11 +39,23 @@ export function TongCard({ tong, isSelected, onClick }: TongCardProps) {
             </p>
 
             <div className="flex items-center justify-between border-t border-slate-50 pt-3">
-                <div className="flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="text-[11px] font-medium text-slate-500 truncate max-w-[120px]">
-                        {tong.address}
-                    </span>
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="text-[11px] font-medium text-slate-500 truncate max-w-[120px]">
+                            {tong.address}
+                        </span>
+                    </div>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${tong.lat},${tong.lng}`, '_blank');
+                        }}
+                        className="flex items-center gap-1.5 text-[10px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1.5 rounded-lg w-fit hover:bg-blue-100 transition-colors"
+                    >
+                        <Navigation className="w-3 h-3" />
+                        Directions
+                    </button>
                 </div>
 
                 <div className="flex items-center gap-2">

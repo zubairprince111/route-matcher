@@ -11,6 +11,7 @@ import VaraKoto from "./pages/VaraKoto.tsx";
 import LocalRates from "./pages/LocalRates.tsx";
 import TongPage from "./pages/TongPage.tsx";
 import Account from "./pages/Account.tsx";
+import About from "./pages/About.tsx";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/local-rates" element={<LocalRates />} />
             <Route path="/tong" element={<TongPage />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/about" element={<About />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

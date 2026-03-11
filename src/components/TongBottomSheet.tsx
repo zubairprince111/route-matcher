@@ -13,7 +13,7 @@ interface TongBottomSheetProps {
 }
 
 export function TongBottomSheet({ tongs, selectedTong, onSelectTong, onClose, onSnapChange }: TongBottomSheetProps) {
-    const [snap, setSnap] = useState<number | string | null>(0.35);
+    const [snap, setSnap] = useState<number | string | null>(0.45);
     const isExpanded = snap === 0.85;
 
     const handleSnapChange = (newSnap: number | string | null) => {
@@ -25,20 +25,20 @@ export function TongBottomSheet({ tongs, selectedTong, onSelectTong, onClose, on
         <Drawer
             open={true}
             onOpenChange={() => { }}
-            snapPoints={[0.35, 0.85]}
+            snapPoints={[0.45, 0.85]}
             activeSnapPoint={snap}
             setActiveSnapPoint={handleSnapChange}
             modal={false}
             dismissible={false}
         >
             <DrawerContent
-                className="fixed bottom-0 left-0 right-0 z-[6000] bg-[#F8F9FA] border-t-0 rounded-t-3xl shadow-2xl flex flex-col focus-visible:outline-none focus:outline-none mx-auto w-full md:max-w-2xl px-0 overflow-hidden"
-                style={{ height: '85vh' }}
+                className="fixed bottom-[72px] md:bottom-[80px] left-0 right-0 z-[4000] bg-[#F8F9FA] border-t-0 rounded-t-3xl shadow-[0_-8px_30px_-5px_rgba(0,0,0,0.1)] flex flex-col focus-visible:outline-none focus:outline-none mx-auto w-full md:max-w-xl px-0 overflow-hidden"
+                style={{ height: 'calc(85vh - 72px)' }}
             >
                 {/* Drag Handle + Header */}
                 <div
                     className="bg-white rounded-t-3xl cursor-grab active:cursor-grabbing px-4 pt-3 pb-4 shrink-0 border-b border-slate-100"
-                    onClick={() => handleSnapChange(isExpanded ? 0.35 : 0.85)}
+                    onClick={() => handleSnapChange(isExpanded ? 0.45 : 0.85)}
                 >
                     {/* Handle bar */}
                     <div className="flex justify-center mb-3">

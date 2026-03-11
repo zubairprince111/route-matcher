@@ -1,17 +1,24 @@
 import { useState, useCallback, useMemo } from "react";
 import { Plus, Search, Bus } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { TicketMap } from "@/components/TicketMap";
 import { RouteBottomSheet } from "@/components/RouteBottomSheet";
 import { SellTicketModal } from "@/components/SellTicketModal";
 import { ListingsBottomSheet } from "@/components/ListingsBottomSheet";
-import { getRoutes, Route, TicketListing, cities } from "@/data/ticketData";
+import { Route, TicketListing, cities } from "@/data/ticketData";
 
 import { Input } from "@/components/ui/input";
 
 const Index = () => {
-  const [allTickets, setAllTickets] = useState<TicketListing[]>(() => {
-    const routes = getRoutes();
-    return routes.flatMap((r) => r.tickets);
+  const queryClient = useQueryClient();
+
+  const { data: allTickets = [], isLoading } = useQuery({
+    queryKey: ["tickets"],
+    queryFn: async () => {
+      const res = await fetch("/api/tickets");
+      if (!res.ok) throw new Error("Failed to fetch tickets");
+      return (await res.json()) as TicketListing[];
+    },
   });
 
   const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
@@ -37,8 +44,8 @@ const Index = () => {
       const key = `${ticket.origin}-${ticket.destination}`;
       if (!routeMap.has(key)) {
         routeMap.set(key, {
-          origin: cities[ticket.origin],
-          destination: cities[ticket.destination],
+          origin: cities[ticket.origin] || { name: ticket.origin, lat: 23.8, lng: 90.4 },
+          destination: cities[ticket.destination] || { name: ticket.destination, lat: 23.8, lng: 90.4 },
           tickets: [],
         });
       }
@@ -48,21 +55,16 @@ const Index = () => {
   }, [filteredTickets]);
 
   const handleAddTicket = (ticket: TicketListing) => {
-    setAllTickets((prev) => [...prev, ticket]);
+    // Ticket adding is now handled inside SellTicketModal's mutation mapping directly, 
+    // but in case it bubbles up, we trigger a refetch
+    queryClient.invalidateQueries({ queryKey: ["tickets"] });
   };
 
   const handleReportTicket = (ticketId: string) => {
-    setAllTickets((prev) => prev.map(t => {
-      if (t.id === ticketId) {
-        const newCount = (t.reportCount || 0) + 1;
-        return {
-          ...t,
-          reportCount: newCount,
-          isFraud: newCount > 5
-        };
-      }
-      return t;
-    }));
+    // Basic local optimism for reporting
+    queryClient.setQueryData(["tickets"], (old: TicketListing[] | undefined) =>
+      old ? old.map(t => t.id === ticketId ? { ...t, reportCount: (t.reportCount || 0) + 1 } : t) : []
+    );
   };
 
   return (

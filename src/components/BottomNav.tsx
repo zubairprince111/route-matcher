@@ -1,13 +1,19 @@
 import { NavLink } from "react-router-dom";
-import { Home, Ticket, Calculator, User } from "lucide-react";
+import { Home, Ticket, Calculator, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
     const navItems = [
         { name: "Home", path: "/", icon: Home },
         { name: "Tickets", path: "/tickets", icon: Ticket },
-        { name: "Rates", path: "/varakoto", icon: Calculator },
-        { name: "Profile", path: "/account", icon: User },
+        {
+            name: "Tong",
+            path: "/tong",
+            icon: ({ className }: { className?: string }) => (
+                <img src="/tong_logo.png" alt="Tong" className={cn(className, "object-contain")} />
+            )
+        },
+        { name: "About", path: "/about", icon: Info },
     ];
 
     return (
@@ -29,13 +35,22 @@ export function BottomNav() {
                         {({ isActive }) => (
                             <>
                                 <div className="relative">
-                                    <item.icon
-                                        className={cn(
-                                            "w-6 h-6 transition-transform duration-300",
-                                            isActive ? "scale-110 fill-primary text-primary" : "scale-100"
-                                        )}
-                                        strokeWidth={isActive ? 2.5 : 2}
-                                    />
+                                    {item.name === "Tong" ? (
+                                        <item.icon
+                                            className={cn(
+                                                "w-8 h-8 transition-transform duration-300",
+                                                isActive ? "scale-110" : "scale-100"
+                                            )}
+                                        />
+                                    ) : (
+                                        <item.icon
+                                            className={cn(
+                                                "w-6 h-6 transition-transform duration-300",
+                                                isActive ? "scale-110 fill-primary text-primary" : "scale-100"
+                                            )}
+                                            strokeWidth={isActive ? 2.5 : 2}
+                                        />
+                                    )}
                                     {isActive && item.name === "Home" && (
                                         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-secondary rounded-full shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
                                     )}
