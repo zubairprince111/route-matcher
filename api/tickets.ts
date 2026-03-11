@@ -22,7 +22,11 @@ export default async function handler(req: any, res: any) {
 
     try {
         if (req.method === 'GET') {
-            const supaRes = await fetch(`${SUPABASE_URL}/rest/v1/tickets?select=*&order=created_at.desc`, {
+            const url = new URL(req.url!, `http://${req.headers.host}`);
+            const limit = parseInt(url.searchParams.get('limit') || '20');
+            const offset = parseInt(url.searchParams.get('offset') || '0');
+
+            const supaRes = await fetch(`${SUPABASE_URL}/rest/v1/tickets?select=*&order=posted_at.desc&limit=${limit}&offset=${offset}`, {
                 headers: {
                     apikey: SUPABASE_KEY,
                     Authorization: `Bearer ${SUPABASE_KEY}`,
@@ -31,7 +35,23 @@ export default async function handler(req: any, res: any) {
 
             if (!supaRes.ok) throw new Error(await supaRes.text());
             const data = await supaRes.json();
-            return res.status(200).setHeaders(CORS_HEADERS).json(data);
+
+            // Map snake_case from DB to camelCase for Frontend
+            const mappedData = data.map((t: any) => ({
+                id: t.id,
+                origin: t.origin,
+                destination: t.destination,
+                vehicleType: t.vehicle_type,
+                operatorName: t.operator_name,
+                price: t.price,
+                description: t.description,
+                phone: t.phone,
+                postedAt: t.posted_at,
+                reportCount: t.report_count,
+                isFraud: t.is_fraud
+            }));
+
+            return res.status(200).setHeaders(CORS_HEADERS).json(mappedData);
 
         } else if (req.method === 'POST') {
             const body = req.body;
@@ -51,8 +71,8 @@ export default async function handler(req: any, res: any) {
                 body: JSON.stringify({
                     origin: body.origin,
                     destination: body.destination,
-                    vehicleType: body.vehicleType,
-                    operatorName: body.operatorName,
+                    vehicle_type: body.vehicleType,
+                    operator_name: body.operatorName,
                     price: body.price,
                     description: body.description,
                     phone: body.phone,
@@ -61,7 +81,24 @@ export default async function handler(req: any, res: any) {
 
             if (!supaRes.ok) throw new Error(await supaRes.text());
             const data = await supaRes.json();
-            return res.status(201).setHeaders(CORS_HEADERS).json(data[0]);
+            const t = data[0];
+
+            // Map back to camelCase for the frontend response
+            const responseData = {
+                id: t.id,
+                origin: t.origin,
+                destination: t.destination,
+                vehicleType: t.vehicle_type,
+                operatorName: t.operator_name,
+                price: t.price,
+                description: t.description,
+                phone: t.phone,
+                postedAt: t.posted_at,
+                reportCount: t.report_count,
+                isFraud: t.is_fraud
+            };
+
+            return res.status(201).setHeaders(CORS_HEADERS).json(responseData);
 
         } else {
             return res.status(405).setHeaders(CORS_HEADERS).json({ error: 'Method not allowed' });

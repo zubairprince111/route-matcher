@@ -34,10 +34,10 @@ export default async function handler(req: any, res: any) {
             return res.status(400).setHeaders(CORS_HEADERS).json({ error: 'Invalid vote_type' });
         }
 
-        // Get user IP from Vercel headers
+        // Get user IP from Cloudflare header (preferred) or x-forwarded-for
         const user_ip =
+            (req.headers['cf-connecting-ip'] as string) ||
             (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
-            req.socket.remoteAddress ||
             'unknown-ip';
 
         // 1. Record the vote (enforces UNIQUE constraint)
