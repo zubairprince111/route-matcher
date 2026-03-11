@@ -49,7 +49,7 @@ export function TongCard({ tong, isSelected, onClick }: TongCardProps) {
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
-                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${tong.lat},${tong.lng}`, '_blank');
+                            window.open(`https://www.google.com/maps/search/?api=1&query=${tong.lat},${tong.lng}`, '_blank');
                         }}
                         className="flex items-center gap-1.5 text-[10px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1.5 rounded-lg w-fit hover:bg-blue-100 transition-colors"
                     >

@@ -55,7 +55,7 @@ export function ListingsBottomSheet({ tickets, onReportTicket }: ListingsBottomS
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-28">
+                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-32">
                     {tickets.length > 0 ? (
                         tickets.map((ticket) => (
                             <TicketCard

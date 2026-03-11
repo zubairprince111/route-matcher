@@ -101,13 +101,13 @@ export function TicketCard({ ticket, onReport }: TicketCardProps) {
 
         {/* Footer: time + action buttons */}
         <div className="flex items-center justify-between px-4 pb-3 pt-1 gap-2">
-          <div className="flex flex-col">
+          <div className="flex flex-col shrink-0">
             <span className="text-[10px] text-slate-400 font-medium">{ticket.postedAt}</span>
             {ticket.reportCount && ticket.reportCount > 0 && (
               <span className="text-[9px] text-red-400 font-bold mt-0.5">{ticket.reportCount} reports</span>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
             <button
               onClick={() => {
                 const reported = JSON.parse(localStorage.getItem('reported_tickets') || '[]');
@@ -127,14 +127,14 @@ export function TicketCard({ ticket, onReport }: TicketCardProps) {
             </button>
             <button
               onClick={() => triggerContact("call")}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 active:scale-95 transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl bg-emerald-600 text-white text-[10px] sm:text-xs font-bold hover:bg-emerald-700 active:scale-95 transition-all shadow-sm"
             >
               <Phone className="w-3.5 h-3.5" />
               কল করুন
             </button>
             <button
               onClick={() => triggerContact("whatsapp")}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-700 text-xs font-bold hover:bg-emerald-100 active:scale-95 transition-all"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-700 text-[10px] sm:text-xs font-bold hover:bg-emerald-100 active:scale-95 transition-all"
             >
               <MessageCircle className="w-3.5 h-3.5" />
               WhatsApp

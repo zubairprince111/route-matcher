@@ -5,15 +5,15 @@ import { toast } from "sonner";
 
 interface FareReport {
     id: string;
-    from_city: string;
-    to_city: string;
-    transport_type: string;
+    fromCity: string;
+    toCity: string;
+    transportType: string;
     fare: number;
-    company_name: string | null;
-    seat_class: string | null;
+    companyName: string | null;
+    seatClass: string | null;
     upvotes: number;
     downvotes: number;
-    created_at: string;
+    createdAt: string;
 }
 
 const SEAT_CLASSES: Record<string, { val: string; label: string }[]> = {
@@ -66,7 +66,7 @@ function useFareReports() {
 function useAddFareReport() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (report: { from_city: string; to_city: string; transport_type: string; fare: number; company_name?: string; seat_class?: string }) => {
+        mutationFn: async (report: { fromCity: string; toCity: string; transportType: string; fare: number; companyName?: string; seatClass?: string }) => {
             const res = await fetch("/api/fare-reports", {
                 method: "POST",
                 headers: {
@@ -146,7 +146,7 @@ export function FareReporter({ open, onClose, pageMode = false }: FareReporterPr
             return;
         }
         addReport.mutate(
-            { from_city: fromCity, to_city: toCity, transport_type: transportType, fare: parseInt(fare), company_name: companyName || undefined, seat_class: seatClass || undefined },
+            { fromCity: fromCity, toCity: toCity, transportType: transportType, fare: parseInt(fare), companyName: companyName || undefined, seatClass: seatClass || undefined },
             { onSuccess: () => { setShowForm(false); setFromCity(""); setToCity(""); setFare(""); setCompanyName(""); setSeatClass(""); } }
         );
     };
@@ -194,8 +194,8 @@ export function FareReporter({ open, onClose, pageMode = false }: FareReporterPr
                 <AlertTriangle size={16} className="flex-shrink-0 mt-0.5 text-red-500" />
                 <p className="text-xs leading-relaxed text-slate-900">
                     অতিরিক্ত ভাড়া নিলে <strong>BRTA হেল্পলাইন</strong>-এ অভিযোগ করুন।
-                    <a href="tel:16263" className="inline-flex items-center gap-1 ml-1 font-bold underline text-red-500">
-                        <Phone size={10} /> ১৬২৬৩
+                    <a href="tel:16107" className="inline-flex items-center gap-1 ml-1 font-bold underline text-red-500">
+                        <Phone size={10} /> ১৬১০৭
                     </a>
                 </p>
             </div>
@@ -256,14 +256,6 @@ export function FareReporter({ open, onClose, pageMode = false }: FareReporterPr
                             ))}
                         </div>
 
-                        {/* Seat class */}
-                        <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-bold text-slate-800 text-sm">রিপোর্ট করা ভাড়া</h4>
-                            <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-950/10 rounded-full">
-                                <TrendingUp size={10} className="text-primary" />
-                                <span className="text-[9px] font-black text-primary uppercase">Recently Updated</span>
-                            </div>
-                        </div>
                         <div className="flex gap-2">
                             {SEAT_CLASSES[transportType]?.map(sc => <button
                                 key={sc.val}
@@ -336,30 +328,30 @@ export function FareReporter({ open, onClose, pageMode = false }: FareReporterPr
                                 <div key={r.id} className="rounded-xl p-3 shadow-sm" style={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}>
                                     <div className="flex items-center justify-between mb-1.5">
                                         <div className="flex items-center gap-1.5">
-                                            <span className="text-sm">{r.transport_type === "bus" ? "🚌" : r.transport_type === "train" ? "🚂" : "⛴️"}</span>
-                                            <span className="text-xs font-bold" style={{ color: "hsl(var(--secondary))" }}>{r.from_city}</span>
+                                            <span className="text-sm">{r.transportType === "bus" ? "🚌" : r.transportType === "train" ? "🚂" : "⛴️"}</span>
+                                            <span className="text-xs font-bold" style={{ color: "hsl(var(--secondary))" }}>{r.fromCity}</span>
                                             <ArrowRight size={12} style={{ color: "hsl(var(--muted-foreground))" }} />
                                             <span className="text-[10px] font-black uppercase tracking-tighter" style={{ color: "hsl(var(--primary))" }}>
                                                 {transportType}
                                             </span>
-                                            <span className="text-xs font-bold" style={{ color: "hsl(var(--secondary))" }}>{r.to_city}</span>
+                                            <span className="text-xs font-bold" style={{ color: "hsl(var(--secondary))" }}>{r.toCity}</span>
                                         </div>
                                         <span className="text-sm font-black" style={{ color: "hsl(var(--primary))" }}>৳{r.fare}</span>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            {r.seat_class && (
+                                            {r.seatClass && (
                                                 <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: "hsl(var(--primary) / 0.15)", color: "hsl(var(--primary))" }}>
-                                                    {r.seat_class === "ac" ? "❄️ এসি" : r.seat_class === "non_ac" ? "🪟 নন-এসি" : r.seat_class === "cabin" ? "🛏️ কেবিন" : "🪑 ডেক"}
+                                                    {r.seatClass === "ac" ? "❄️ এসি" : r.seatClass === "non_ac" ? "🪟 নন-এসি" : r.seatClass === "cabin" ? "🛏️ কেবিন" : "🪑 ডেক"}
                                                 </span>
                                             )}
-                                            {r.company_name && (
+                                            {r.companyName && (
                                                 <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: "hsl(var(--muted))", color: "hsl(var(--muted-foreground))" }}>
-                                                    {r.company_name}
+                                                    {r.companyName}
                                                 </span>
                                             )}
                                             <span className="text-[10px]" style={{ color: "hsl(var(--muted-foreground))" }}>
-                                                {new Date(r.created_at).toLocaleDateString("bn-BD")}
+                                                {new Date(r.createdAt).toLocaleDateString("bn-BD")}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-1">

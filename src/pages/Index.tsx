@@ -103,8 +103,8 @@ const Index = () => {
             </div>
 
             {/* Bottom Row: Filters */}
-            <div className="pointer-events-auto flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar mt-1">
-              <div className="flex gap-2 shrink-0 overflow-x-auto hide-scrollbar px-1 py-1">
+            <div className="pointer-events-auto flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-3 md:pb-0 hide-scrollbar mt-1">
+              <div className="flex gap-2 shrink-0 overflow-x-auto hide-scrollbar px-1 py-1.5">
                 {vehicleTypes.map((type) => (
                   <button
                     key={type}
