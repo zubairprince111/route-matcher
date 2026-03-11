@@ -13,7 +13,7 @@ interface TongBottomSheetProps {
 }
 
 export function TongBottomSheet({ tongs, selectedTong, onSelectTong, onClose, onSnapChange }: TongBottomSheetProps) {
-    const [snap, setSnap] = useState<number | string | null>(0.45);
+    const [snap, setSnap] = useState<number | string | null>(0.30);
     const isExpanded = snap === 0.85;
 
     const handleSnapChange = (newSnap: number | string | null) => {
@@ -25,15 +25,15 @@ export function TongBottomSheet({ tongs, selectedTong, onSelectTong, onClose, on
         <Drawer
             open={true}
             onOpenChange={() => { }}
-            snapPoints={[0.45, 0.85]}
+            snapPoints={[0.30, 0.75]}
             activeSnapPoint={snap}
             setActiveSnapPoint={handleSnapChange}
             modal={false}
             dismissible={false}
         >
             <DrawerContent
-                className="fixed bottom-[72px] md:bottom-[80px] left-0 right-0 z-[4000] bg-[#F8F9FA] border-t-0 rounded-t-3xl shadow-[0_-8px_30px_-5px_rgba(0,0,0,0.1)] flex flex-col focus-visible:outline-none focus:outline-none mx-auto w-full md:max-w-xl px-0 overflow-hidden"
-                style={{ height: 'calc(85vh - 72px)' }}
+                className="fixed bottom-[72px] md:bottom-[80px] left-0 right-0 z-[1000] bg-[#F8F9FA] border-t-0 rounded-t-3xl shadow-[0_-8px_30px_-5px_rgba(0,0,0,0.1)] flex flex-col focus-visible:outline-none focus:outline-none mx-auto w-full md:max-w-xl px-0 overflow-hidden"
+                style={{ height: 'calc(75vh - 72px)' }}
             >
                 {/* Drag Handle + Header */}
                 <div
