@@ -135,14 +135,14 @@ const Index = () => {
 
         {/* Route Bottom Sheet (Overrides listings sheet when active) */}
         <RouteBottomSheet route={selectedRoute} onClose={() => setSelectedRoute(null)} />
-
-        {/* Sell Modal */}
-        <SellTicketModal
-          open={sellModalOpen}
-          onClose={() => setSellModalOpen(false)}
-          onSubmit={handleAddTicket}
-        />
       </div>
+
+      {/* Sell Modal — moved OUTSIDE overflow-hidden to avoid stacking context issues with portal-rendered drawers */}
+      <SellTicketModal
+        open={sellModalOpen}
+        onClose={() => setSellModalOpen(false)}
+        onSubmit={handleAddTicket}
+      />
 
       {/* FAB — rendered OUTSIDE overflow-hidden so it's always above the portal-rendered bottom sheet */}
       <button
