@@ -10,14 +10,14 @@ interface ListingsBottomSheetProps {
 }
 
 export function ListingsBottomSheet({ tickets, onReportTicket }: ListingsBottomSheetProps) {
-    const [snap, setSnap] = useState<number | string | null>(0.30);
-    const isExpanded = snap === 0.85;
+    const [snap, setSnap] = useState<number | string | null>(0.38);
+    const isExpanded = snap === 0.80;
 
     return (
         <Drawer
             open={true}
             onOpenChange={() => { }}
-            snapPoints={[0.30, 0.75]}
+            snapPoints={[0.38, 0.80]}
             activeSnapPoint={snap}
             setActiveSnapPoint={setSnap}
             modal={false}

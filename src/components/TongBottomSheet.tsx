@@ -13,8 +13,8 @@ interface TongBottomSheetProps {
 }
 
 export function TongBottomSheet({ tongs, selectedTong, onSelectTong, onClose, onSnapChange }: TongBottomSheetProps) {
-    const [snap, setSnap] = useState<number | string | null>(0.30);
-    const isExpanded = snap === 0.85;
+    const [snap, setSnap] = useState<number | string | null>(0.38);
+    const isExpanded = snap === 0.80;
 
     const handleSnapChange = (newSnap: number | string | null) => {
         setSnap(newSnap);
@@ -25,7 +25,7 @@ export function TongBottomSheet({ tongs, selectedTong, onSelectTong, onClose, on
         <Drawer
             open={true}
             onOpenChange={() => { }}
-            snapPoints={[0.30, 0.75]}
+            snapPoints={[0.38, 0.80]}
             activeSnapPoint={snap}
             setActiveSnapPoint={handleSnapChange}
             modal={false}

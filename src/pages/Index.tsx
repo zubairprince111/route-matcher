@@ -147,8 +147,8 @@ const Index = () => {
       {/* FAB — rendered OUTSIDE overflow-hidden so it's always above the portal-rendered bottom sheet */}
       <button
         onClick={() => setSellModalOpen(true)}
-        style={{ zIndex: 9999 }}
-        className="fixed bottom-24 right-4 md:bottom-28 md:right-8 w-14 h-14 rounded-full bg-secondary text-secondary-foreground shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all border-2 border-yellow-600/20"
+        style={{ position: 'fixed', bottom: 'calc(40vh + 72px)', right: '1rem', zIndex: 9999 }}
+        className="w-14 h-14 rounded-full bg-secondary text-secondary-foreground shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all border-2 border-yellow-600/20"
       >
         <Plus className="w-6 h-6" strokeWidth={3} />
       </button>

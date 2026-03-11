@@ -223,8 +223,8 @@ export default function TongPage() {
             {!isAddModalOpen && (
                 <button
                     onClick={() => setIsAddModalOpen(true)}
-                    style={{ zIndex: 9999 }}
-                    className={`fixed bottom-24 right-6 bg-yellow-400 hover:bg-yellow-500 text-slate-900 w-16 h-16 rounded-full shadow-2xl flex items-center justify-center border-4 border-white/50 animate-bounce-subtle active:scale-90 transition-all ${isMenuExpanded ? "opacity-50 scale-90" : "opacity-100 scale-100"}`}
+                    style={{ position: 'fixed', bottom: 'calc(40vh + 72px)', right: '1.5rem', zIndex: 9999 }}
+                    className={`bg-yellow-400 hover:bg-yellow-500 text-slate-900 w-16 h-16 rounded-full shadow-2xl flex items-center justify-center border-4 border-white/50 animate-bounce-subtle active:scale-90 transition-all ${isMenuExpanded ? "opacity-50 scale-90" : "opacity-100 scale-100"}`}
                 >
                     <Plus className="w-8 h-8" strokeWidth={4} />
                 </button>
