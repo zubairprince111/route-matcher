@@ -57,11 +57,15 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
+    /* Removes blue tap highlight on mobile */
   }
 
   body {
     @apply bg-background text-foreground font-sans;
     font-family: 'Inter', sans-serif;
+    overscroll-behavior-y: none;
+    /* Prevents pull-to-refresh bounce effect on root */
   }
 
   h1,
@@ -177,4 +181,37 @@
 
 .animate-bounce-subtle {
   animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* Safe-area inset helpers for iPhone notch / home bar */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Full-height screens account for the iOS address bar */
+.h-screen-safe {
+  height: 100dvh;
+}
+
+/* Native smooth scroll everywhere */
+* {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent long-press callouts & text selection on interactive cards */
+button,
+a,
+[role="button"] {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* Bigger touch targets for small icons (min 44px Apple guideline) */
+nav a {
+  min-height: 44px;
 }
