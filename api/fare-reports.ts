@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -7,7 +7,7 @@ const CORS_HEADERS = {
     'Content-Type': 'application/json',
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
     if (req.method === 'OPTIONS') return res.status(200).setHeaders(CORS_HEADERS).end();
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
