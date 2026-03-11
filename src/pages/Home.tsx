@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Map as MapIcon, Bus, Car, TrafficCone, MapPin, AlertCircle, ArrowRight, Bell, Train, Ticket, Coffee } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -5,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 export default function Home() {
     const navigate = useNavigate();
+    const [showNotifications, setShowNotifications] = useState(false);
 
     return (
         <div className="min-h-screen bg-[#F8F9FA] text-slate-800 pb-28 font-sans">
@@ -15,10 +17,40 @@ export default function Home() {
                     <h1 className="font-extrabold text-4xl tracking-tight leading-none text-slate-900 text-center">
                         DEK<span className="text-primary">Hoo</span>
                     </h1>
-                    <button className="absolute right-6 w-11 h-11 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors border border-[#E5B127]/30">
+                    <button
+                        onClick={() => setShowNotifications(!showNotifications)}
+                        className="absolute right-6 w-11 h-11 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors border border-[#E5B127]/30"
+                    >
                         <Bell className="w-5 h-5 text-slate-600" />
                         <div className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
                     </button>
+
+                    {/* Notification Dropdown */}
+                    {showNotifications && (
+                        <div className="absolute top-20 right-6 w-[320px] bg-white rounded-2xl shadow-xl border border-slate-100 p-4 z-[9000] animate-in slide-in-from-top-2 text-left">
+                            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-50">
+                                <h3 className="font-bold text-slate-900">Notifications</h3>
+                                <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">1 New</span>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 shadow-inner">
+                                    <img src="/cover-modified.png" alt="Developer" className="w-full h-full object-cover rounded-full" />
+                                </div>
+                                <div className="text-left flex-1">
+                                    <h4 className="text-xs font-bold text-slate-900 mb-1">Message from Developer</h4>
+                                    <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
+                                        Thank you for being with us! We are glad to have you here. Keep exploring DEKHoo, and we are open for your suggestions for future upgrades.
+                                        <span className="font-bold text-slate-800">- Jubair Prince</span><br />
+                                        <a href="https://www.facebook.com/jubair.prince009" target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-600 hover:text-blue-700 underline font-semibold inline-block mt-0.5">
+                                            Follow on Facebook
+                                        </a>
+                                    </p>
+                                    <span className="text-[9px] font-bold text-slate-400 mt-2 block">Just now</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Global Search */}
@@ -130,26 +162,29 @@ export default function Home() {
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Boutique & Hangout</p>
                     </div>
 
-                    {/* Rest Stops */}
-                    <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center text-center cursor-pointer hover:shadow-md transition-shadow">
-                        <div className="w-12 h-12 rounded-full bg-emerald-950/10 flex items-center justify-center mb-3">
-                            <MapPin className="w-6 h-6 text-primary" />
+                    {/* Coming Soon Placeholder */}
+                    <div className="bg-white/50 p-5 rounded-3xl border border-slate-100 border-dashed flex flex-col items-center text-center">
+                        <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-dashed flex items-center justify-center mb-3">
+                            <span className="text-slate-300 font-bold text-lg">+</span>
                         </div>
-                        <h3 className="font-bold text-slate-900 text-sm mb-1">Rest Stops</h3>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Highway Food</p>
+                        <h3 className="font-bold text-slate-400 text-sm mb-1">More Features</h3>
+                        <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">Coming Soon</p>
                     </div>
 
                 </div>
 
-                {/* SOS Hub as its own wide-ish row or kept prominent */}
-                <div className="bg-yellow-500 p-5 rounded-3xl shadow-sm border border-yellow-600 flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow">
+                {/* Biriyani Dibe Redirect Card */}
+                <div
+                    onClick={() => window.open('https://www.biriyanidibe.me', '_blank')}
+                    className="bg-yellow-500 p-5 rounded-3xl shadow-sm border border-yellow-600 flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow mb-4"
+                >
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center">
-                            <AlertCircle className="w-6 h-6 text-slate-900" fill="currentColor" />
+                        <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center p-2 shadow-inner">
+                            <img src="/biriyanidibe.ico" alt="Biriyani Dibe Logo" className="w-full h-full object-contain" />
                         </div>
                         <div className="text-left">
-                            <h3 className="font-bold text-slate-900 text-sm">SOS Hub</h3>
-                            <p className="text-[9px] font-black text-slate-900/60 uppercase tracking-widest">Emergency Assistance</p>
+                            <h3 className="font-bold text-slate-900 text-sm">বিরিয়ানি দিবে</h3>
+                            <p className="text-[9px] font-black text-slate-900/60 uppercase tracking-widest">Food Platform</p>
                         </div>
                     </div>
                     <ArrowRight className="text-slate-900/40" size={20} />
