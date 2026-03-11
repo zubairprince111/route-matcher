@@ -20,6 +20,11 @@ export default async function handler(req: any, res: any) {
         return res.status(500).setHeaders(CORS_HEADERS).json({ error: 'Supabase credentials not configured.' });
     }
 
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey !== process.env.VITE_API_KEY) {
+        return res.status(401).setHeaders(CORS_HEADERS).json({ error: 'Unauthorized: Invalid API Key' });
+    }
+
     try {
         if (req.method === 'GET') {
             const url = new URL(req.url!, `http://${req.headers.host}`);

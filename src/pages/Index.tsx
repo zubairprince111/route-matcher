@@ -15,7 +15,11 @@ const Index = () => {
   const { data: allTickets = [], isLoading } = useQuery({
     queryKey: ["tickets"],
     queryFn: async () => {
-      const res = await fetch("/api/tickets");
+      const res = await fetch("/api/tickets", {
+        headers: {
+          "x-api-key": import.meta.env.VITE_API_KEY
+        }
+      });
       if (!res.ok) throw new Error("Failed to fetch tickets");
       return (await res.json()) as TicketListing[];
     },

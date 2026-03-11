@@ -52,7 +52,11 @@ export function LocalFareReporter({ open, onClose, pageMode = false }: LocalFare
     const { data: reports = [], isLoading } = useQuery({
         queryKey: ["local_fare_reports"],
         queryFn: async () => {
-            const res = await fetch("/api/local-fare-reports");
+            const res = await fetch("/api/local-fare-reports", {
+                headers: {
+                    "x-api-key": import.meta.env.VITE_API_KEY
+                }
+            });
             if (!res.ok) throw new Error("Failed to fetch data");
             return (await res.json()) as LocalFareReport[];
         }
@@ -62,7 +66,10 @@ export function LocalFareReporter({ open, onClose, pageMode = false }: LocalFare
         mutationFn: async (report: Partial<LocalFareReport>) => {
             const res = await fetch("/api/local-fare-reports", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": import.meta.env.VITE_API_KEY
+                },
                 body: JSON.stringify(report)
             });
             if (!res.ok) throw new Error("Failed to post report");
@@ -86,7 +93,10 @@ export function LocalFareReporter({ open, onClose, pageMode = false }: LocalFare
         mutationFn: async ({ id, type }: { id: string; type: "upvote" | "downvote" }) => {
             const res = await fetch("/api/vote", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": import.meta.env.VITE_API_KEY
+                },
                 body: JSON.stringify({ item_id: id, item_type: "local_fare_report", vote_type: type })
             });
             if (!res.ok) {

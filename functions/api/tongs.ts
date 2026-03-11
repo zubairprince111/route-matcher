@@ -1,5 +1,5 @@
 export async function onRequestGet(context: any) {
-    const { env } = context;
+    const { env, request } = context;
     const SUPABASE_URL = env.SUPABASE_URL;
     const SUPABASE_KEY = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_KEY;
 
@@ -8,7 +8,11 @@ export async function onRequestGet(context: any) {
     }
 
     try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/tongs?select=*&order=created_at.desc`, {
+        const url = new URL(request.url);
+        const limit = parseInt(url.searchParams.get('limit') || '20');
+        const offset = parseInt(url.searchParams.get('offset') || '0');
+
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/tongs?select=*&order=created_at.desc&limit=${limit}&offset=${offset}`, {
             headers: {
                 "apikey": SUPABASE_KEY,
                 "Authorization": `Bearer ${SUPABASE_KEY}`
@@ -17,8 +21,24 @@ export async function onRequestGet(context: any) {
 
         if (!res.ok) throw new Error(await res.text());
 
-        const data = await res.json();
-        return new Response(JSON.stringify(data), {
+        const data = await res.json() as any[];
+
+        // Map snake_case from DB to camelCase for Frontend
+        const mappedData = data.map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            lat: t.lat,
+            lng: t.lng,
+            openTime: t.open_time,
+            closeTime: t.close_time,
+            description: t.description,
+            rating: t.rating,
+            type: t.type,
+            address: t.address,
+            createdAt: t.created_at
+        }));
+
+        return new Response(JSON.stringify(mappedData), {
             headers: { "Content-Type": "application/json" }
         });
 
@@ -55,8 +75,8 @@ export async function onRequestPost(context: any) {
                 name: body.name,
                 lat: body.lat,
                 lng: body.lng,
-                openTime: body.openTime,
-                closeTime: body.closeTime,
+                open_time: body.openTime,
+                close_time: body.closeTime,
                 description: body.description,
                 rating: body.rating || 4.0,
                 type: body.type,
@@ -67,7 +87,24 @@ export async function onRequestPost(context: any) {
         if (!res.ok) throw new Error(await res.text());
 
         const data = await res.json();
-        return new Response(JSON.stringify(data[0]), {
+        const t = data[0];
+
+        // Map back to camelCase for frontend response
+        const responseData = {
+            id: t.id,
+            name: t.name,
+            lat: t.lat,
+            lng: t.lng,
+            openTime: t.open_time,
+            closeTime: t.close_time,
+            description: t.description,
+            rating: t.rating,
+            type: t.type,
+            address: t.address,
+            createdAt: t.created_at
+        };
+
+        return new Response(JSON.stringify(responseData), {
             headers: { "Content-Type": "application/json" }
         });
 

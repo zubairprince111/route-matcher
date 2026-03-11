@@ -45,7 +45,11 @@ export default function TongPage() {
     const { data: allTongs = [], isLoading } = useQuery({
         queryKey: ["tongs"],
         queryFn: async () => {
-            const res = await fetch("/api/tongs");
+            const res = await fetch("/api/tongs", {
+                headers: {
+                    "x-api-key": import.meta.env.VITE_API_KEY
+                }
+            });
             if (!res.ok) throw new Error("Failed to fetch tongs");
             return (await res.json()) as TongLocation[];
         }

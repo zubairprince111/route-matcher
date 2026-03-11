@@ -51,7 +51,11 @@ function useFareReports() {
     return useQuery({
         queryKey: ["fare_reports"],
         queryFn: async () => {
-            const res = await fetch("/api/fare-reports");
+            const res = await fetch("/api/fare-reports", {
+                headers: {
+                    "x-api-key": import.meta.env.VITE_API_KEY
+                }
+            });
             if (!res.ok) throw new Error("Failed to fetch");
             return (await res.json()) as FareReport[];
         },
@@ -65,7 +69,10 @@ function useAddFareReport() {
         mutationFn: async (report: { from_city: string; to_city: string; transport_type: string; fare: number; company_name?: string; seat_class?: string }) => {
             const res = await fetch("/api/fare-reports", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": import.meta.env.VITE_API_KEY
+                },
                 body: JSON.stringify(report),
             });
 
@@ -91,7 +98,10 @@ function useVoteFare() {
         mutationFn: async ({ id, type }: { id: string; type: "upvote" | "downvote" }) => {
             const res = await fetch("/api/vote", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": import.meta.env.VITE_API_KEY
+                },
                 body: JSON.stringify({ item_id: id, item_type: "fare_report", vote_type: type }),
             });
             if (!res.ok) {

@@ -1,5 +1,5 @@
 export async function onRequestGet(context: any) {
-    const { env } = context;
+    const { env, request } = context;
     const SUPABASE_URL = env.SUPABASE_URL;
     const SUPABASE_KEY = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_KEY;
 
@@ -8,7 +8,11 @@ export async function onRequestGet(context: any) {
     }
 
     try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/local_fare_reports?select=*&order=postedAt.desc`, {
+        const url = new URL(request.url);
+        const limit = parseInt(url.searchParams.get('limit') || '20');
+        const offset = parseInt(url.searchParams.get('offset') || '0');
+
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/local_fare_reports?select=*&order=posted_at.desc&limit=${limit}&offset=${offset}`, {
             headers: {
                 "apikey": SUPABASE_KEY,
                 "Authorization": `Bearer ${SUPABASE_KEY}`
@@ -17,8 +21,23 @@ export async function onRequestGet(context: any) {
 
         if (!res.ok) throw new Error(await res.text());
 
-        const data = await res.json();
-        return new Response(JSON.stringify(data), {
+        const data = await res.json() as any[];
+
+        // Map snake_case from DB to camelCase for Frontend
+        const mappedData = data.map((t: any) => ({
+            id: t.id,
+            fromArea: t.from_area,
+            toArea: t.to_area,
+            vehicleType: t.vehicle_type,
+            price: t.price,
+            description: t.description,
+            phone: t.phone,
+            upvotes: t.upvotes,
+            downvotes: t.downvotes,
+            postedAt: t.posted_at
+        }));
+
+        return new Response(JSON.stringify(mappedData), {
             headers: { "Content-Type": "application/json" }
         });
 
@@ -52,9 +71,9 @@ export async function onRequestPost(context: any) {
                 "Prefer": "return=representation"
             },
             body: JSON.stringify({
-                fromArea: body.fromArea,
-                toArea: body.toArea,
-                vehicleType: body.vehicleType,
+                from_area: body.fromArea,
+                to_area: body.toArea,
+                vehicle_type: body.vehicleType,
                 price: body.price,
                 description: body.description,
                 phone: body.phone
@@ -64,7 +83,23 @@ export async function onRequestPost(context: any) {
         if (!res.ok) throw new Error(await res.text());
 
         const data = await res.json();
-        return new Response(JSON.stringify(data[0]), {
+        const t = data[0];
+
+        // Map back to camelCase for frontend response
+        const responseData = {
+            id: t.id,
+            fromArea: t.from_area,
+            toArea: t.to_area,
+            vehicleType: t.vehicle_type,
+            price: t.price,
+            description: t.description,
+            phone: t.phone,
+            upvotes: t.upvotes,
+            downvotes: t.downvotes,
+            postedAt: t.posted_at
+        };
+
+        return new Response(JSON.stringify(responseData), {
             headers: { "Content-Type": "application/json" }
         });
 

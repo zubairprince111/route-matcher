@@ -29,7 +29,10 @@ export function SellTicketModal({ open, onClose, onSubmit }: SellTicketModalProp
     mutationFn: async (ticket: any) => {
       const res = await fetch("/api/tickets", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": import.meta.env.VITE_API_KEY
+        },
         body: JSON.stringify(ticket),
       });
       if (!res.ok) {

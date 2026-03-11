@@ -35,7 +35,10 @@ export function AddTongBottomSheet({ isOpen, onClose, initialCoords }: AddTongBo
         mutationFn: async (spot: any) => {
             const res = await fetch("/api/tongs", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-api-key": import.meta.env.VITE_API_KEY
+                },
                 body: JSON.stringify(spot),
             });
             if (!res.ok) throw new Error("Failed to post Tong spot");
