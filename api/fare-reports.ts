@@ -1,25 +1,34 @@
 
 
-const CORS_HEADERS = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json',
-};
+const CORS_HEADERS = [
+    { name: 'Access-Control-Allow-Origin', value: '*' },
+    { name: 'Access-Control-Allow-Methods', value: 'GET, POST, OPTIONS' },
+    { name: 'Access-Control-Allow-Headers', value: 'Content-Type' },
+    { name: 'Content-Type', value: 'application/json' },
+];
+
+function setCors(res: any) {
+    CORS_HEADERS.forEach(h => res.setHeader(h.name, h.value));
+}
 
 export default async function handler(req: any, res: any) {
-    if (req.method === 'OPTIONS') return res.status(200).setHeaders(CORS_HEADERS).end();
+    if (req.method === 'OPTIONS') {
+        setCors(res);
+        return res.status(200).end();
+    }
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
 
     if (!SUPABASE_URL || !SUPABASE_KEY) {
-        return res.status(500).setHeaders(CORS_HEADERS).json({ error: 'Supabase credentials not configured.' });
+        setCors(res);
+        return res.status(500).json({ error: 'Supabase credentials not configured.' });
     }
 
     const apiKey = req.headers['x-api-key'];
     if (apiKey !== process.env.VITE_API_KEY) {
-        return res.status(401).setHeaders(CORS_HEADERS).json({ error: 'Unauthorized: Invalid API Key' });
+        setCors(res);
+        return res.status(401).json({ error: 'Unauthorized: Invalid API Key' });
     }
 
     try {
@@ -52,12 +61,14 @@ export default async function handler(req: any, res: any) {
                 createdAt: t.created_at
             }));
 
-            return res.status(200).setHeaders(CORS_HEADERS).json(mappedData);
+            setCors(res);
+            return res.status(200).json(mappedData);
 
         } else if (req.method === 'POST') {
             const body = req.body;
             if (!body.fromCity || !body.toCity || !body.transportType || !body.fare) {
-                return res.status(400).setHeaders(CORS_HEADERS).json({ error: 'Missing required fields' });
+                setCors(res);
+                return res.status(400).json({ error: 'Missing required fields' });
             }
 
             const supaRes = await fetch(`${SUPABASE_URL}/rest/v1/fare_reports`, {
@@ -96,12 +107,15 @@ export default async function handler(req: any, res: any) {
                 createdAt: t.created_at
             };
 
-            return res.status(201).setHeaders(CORS_HEADERS).json(responseData);
+            setCors(res);
+            return res.status(201).json(responseData);
 
         } else {
-            return res.status(405).setHeaders(CORS_HEADERS).json({ error: 'Method not allowed' });
+            setCors(res);
+            return res.status(405).json({ error: 'Method not allowed' });
         }
     } catch (e: any) {
-        return res.status(500).setHeaders(CORS_HEADERS).json({ error: e.message });
+        setCors(res);
+        return res.status(500).json({ error: e.message });
     }
 }

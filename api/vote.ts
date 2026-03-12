@@ -1,26 +1,38 @@
 
 
-const CORS_HEADERS = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json',
-};
+const CORS_HEADERS = [
+    { name: 'Access-Control-Allow-Origin', value: '*' },
+    { name: 'Access-Control-Allow-Methods', value: 'POST, OPTIONS' },
+    { name: 'Access-Control-Allow-Headers', value: 'Content-Type' },
+    { name: 'Content-Type', value: 'application/json' },
+];
+
+function setCors(res: any) {
+    CORS_HEADERS.forEach(h => res.setHeader(h.name, h.value));
+}
 
 export default async function handler(req: any, res: any) {
-    if (req.method === 'OPTIONS') return res.status(200).setHeaders(CORS_HEADERS).end();
-    if (req.method !== 'POST') return res.status(405).setHeaders(CORS_HEADERS).json({ error: 'Method not allowed' });
+    if (req.method === 'OPTIONS') {
+        setCors(res);
+        return res.status(200).end();
+    }
+    if (req.method !== 'POST') {
+        setCors(res);
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
 
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
 
     if (!SUPABASE_URL || !SUPABASE_KEY) {
-        return res.status(500).setHeaders(CORS_HEADERS).json({ error: 'Supabase credentials not configured.' });
+        setCors(res);
+        return res.status(500).json({ error: 'Supabase credentials not configured.' });
     }
 
     const apiKey = req.headers['x-api-key'];
     if (apiKey !== process.env.VITE_API_KEY) {
-        return res.status(401).setHeaders(CORS_HEADERS).json({ error: 'Unauthorized: Invalid API Key' });
+        setCors(res);
+        return res.status(401).json({ error: 'Unauthorized: Invalid API Key' });
     }
 
     try {
@@ -28,15 +40,18 @@ export default async function handler(req: any, res: any) {
         const { item_id, item_type, vote_type } = body;
 
         if (!item_id || !item_type || !vote_type) {
-            return res.status(400).setHeaders(CORS_HEADERS).json({ error: 'Missing required fields' });
+            setCors(res);
+            return res.status(400).json({ error: 'Missing required fields' });
         }
 
         if (!['fare_report', 'local_fare_report'].includes(item_type)) {
-            return res.status(400).setHeaders(CORS_HEADERS).json({ error: 'Invalid item_type' });
+            setCors(res);
+            return res.status(400).json({ error: 'Invalid item_type' });
         }
 
         if (!['upvote', 'downvote'].includes(vote_type)) {
-            return res.status(400).setHeaders(CORS_HEADERS).json({ error: 'Invalid vote_type' });
+            setCors(res);
+            return res.status(400).json({ error: 'Invalid vote_type' });
         }
 
         // Get user IP from Cloudflare header (preferred) or x-forwarded-for
@@ -60,7 +75,8 @@ export default async function handler(req: any, res: any) {
         if (!voteRes.ok) {
             const errorText = await voteRes.text();
             if (errorText.includes('23505') || errorText.includes('duplicate key')) {
-                return res.status(400).setHeaders(CORS_HEADERS).json({ error: 'You have already voted on this item.' });
+                setCors(res);
+                return res.status(400).json({ error: 'You have already voted on this item.' });
             }
             throw new Error(`Vote record failed: ${errorText}`);
         }
@@ -77,7 +93,8 @@ export default async function handler(req: any, res: any) {
         const currentData = await getRes.json();
 
         if (!currentData || currentData.length === 0) {
-            return res.status(404).setHeaders(CORS_HEADERS).json({ error: 'Item not found' });
+            setCors(res);
+            return res.status(404).json({ error: 'Item not found' });
         }
 
         const newValue = (currentData[0][columnToUpdate] || 0) + 1;
@@ -94,9 +111,11 @@ export default async function handler(req: any, res: any) {
 
         if (!patchRes.ok) throw new Error('Failed to update vote count');
 
-        return res.status(200).setHeaders(CORS_HEADERS).json({ success: true, message: 'Vote counted' });
+        setCors(res);
+        return res.status(200).json({ success: true, message: 'Vote counted' });
 
     } catch (e: any) {
-        return res.status(500).setHeaders(CORS_HEADERS).json({ error: e.message });
+        setCors(res);
+        return res.status(500).json({ error: e.message });
     }
 }
