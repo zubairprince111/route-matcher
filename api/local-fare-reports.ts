@@ -3,7 +3,7 @@
 const CORS_HEADERS = [
     { name: 'Access-Control-Allow-Origin', value: '*' },
     { name: 'Access-Control-Allow-Methods', value: 'GET, POST, OPTIONS' },
-    { name: 'Access-Control-Allow-Headers', value: 'Content-Type' },
+    { name: 'Access-Control-Allow-Headers', value: 'Content-Type, x-api-key' },
     { name: 'Content-Type', value: 'application/json' },
 ];
 
@@ -87,6 +87,12 @@ export default async function handler(req: any, res: any) {
 
             if (!supaRes.ok) throw new Error(await supaRes.text());
             const data = await supaRes.json();
+
+            if (!data || data.length === 0) {
+                setCors(res);
+                return res.status(201).json({ success: true, message: 'Local report added (representation restricted)' });
+            }
+
             const t = data[0];
 
             // Map back to camelCase for frontend response

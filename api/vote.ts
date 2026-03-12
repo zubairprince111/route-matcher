@@ -3,7 +3,7 @@
 const CORS_HEADERS = [
     { name: 'Access-Control-Allow-Origin', value: '*' },
     { name: 'Access-Control-Allow-Methods', value: 'POST, OPTIONS' },
-    { name: 'Access-Control-Allow-Headers', value: 'Content-Type' },
+    { name: 'Access-Control-Allow-Headers', value: 'Content-Type, x-api-key' },
     { name: 'Content-Type', value: 'application/json' },
 ];
 
